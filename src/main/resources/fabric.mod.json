@@ -1,0 +1,33 @@
+{
+	"schemaVersion": 1,
+	"id": "happy_airships",
+	"version": "${version}",
+	"name": "Happy Airships",
+	"description": "Chase the skies, faster and stronger!",
+	"authors": [
+		"Ghasto"
+	],
+	"license": "MIT",
+	"icon": "assets/happy_airships/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.ghasto.happy_airships.HappyAirships"
+		],
+		"client": [
+			"com.ghasto.happy_airships.HappyAirshipsClient"
+		],
+		"fabric-datagen": [
+			"com.ghasto.happy_airships.HappyAirshipsDataGenerator"
+		]
+	},
+	"mixins": [
+		"happy_airships.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

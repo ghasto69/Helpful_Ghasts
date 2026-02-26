@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "package": "com.ghasto.happy_airships.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "HappyGhastMixin",
+    "LivingEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  },
+  "client": [
+    "HappyGhastRendererMixin",
+    "SmithingScreenMixin"
+  ]
+}

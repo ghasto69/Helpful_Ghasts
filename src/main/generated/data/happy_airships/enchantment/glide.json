@@ -1,0 +1,30 @@
+{
+  "anvil_cost": 1,
+  "description": {
+    "translate": "enchantment.happy_airships.glide"
+  },
+  "effects": {
+    "happy_airships:glide_effect": {
+      "type": "minecraft:add",
+      "value": {
+        "type": "minecraft:linear",
+        "base": 0.75,
+        "per_level_above_first": 0.75
+      }
+    }
+  },
+  "max_cost": {
+    "base": 21,
+    "per_level_above_first": 11
+  },
+  "max_level": 2,
+  "min_cost": {
+    "base": 1,
+    "per_level_above_first": 11
+  },
+  "slots": [
+    "body"
+  ],
+  "supported_items": "#happy_airships:glide_enchantable",
+  "weight": 10
+}
