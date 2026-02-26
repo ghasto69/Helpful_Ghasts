@@ -16,8 +16,7 @@ public class PropellerItem extends Item {
 
     @Override
     public @NotNull InteractionResult interactLivingEntity(ItemStack itemStack, Player player, LivingEntity livingEntity, InteractionHand interactionHand) {
-        // Server and Main hand only
-        if(interactionHand == InteractionHand.OFF_HAND || player.level().isClientSide()) return InteractionResult.PASS;
+        if(interactionHand == InteractionHand.OFF_HAND) return InteractionResult.PASS;
 
         // Is ghast with harness
         if(!(livingEntity instanceof HappyGhast happyGhast)) return InteractionResult.PASS;
@@ -27,10 +26,12 @@ public class PropellerItem extends Item {
         var accessor = (PropellerDataAccessor) happyGhast;
         if(!accessor.getPropeller().isEmpty()) return InteractionResult.PASS;
 
-        accessor.setPropeller(itemStack.copyWithCount(1));
+        if(!player.level().isClientSide()) {
+            accessor.setPropeller(itemStack.copyWithCount(1));
 
-        if(!player.isCreative())
-            itemStack.shrink(1);
+            if(!player.isCreative())
+                itemStack.shrink(1);
+        }
 
         return InteractionResult.SUCCESS;
     }
