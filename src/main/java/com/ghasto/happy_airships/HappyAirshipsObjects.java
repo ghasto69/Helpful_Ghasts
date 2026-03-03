@@ -1,7 +1,7 @@
 package com.ghasto.happy_airships;
 
+import com.blackgear.vanillabackport.common.level.items.HarnessItem;
 import com.ghasto.happy_airships.datagen.HappyAirshipsItemTags;
-import com.ghasto.happy_airships.harness_armor.ArmoredHarnessItem;
 import com.ghasto.happy_airships.propeller.PropellerItem;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -10,11 +10,15 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.LevelBasedValue;
 import net.minecraft.world.item.enchantment.effects.AddValue;
@@ -32,15 +36,11 @@ public interface HappyAirshipsObjects {
 
     PropellerItem PROPELLER = item(PropellerItem::new, "propeller", new Item.Properties().stacksTo(1));
 
-
-
-    //durability values from Items.java
-
     //ArmoredHarnessItem COPPER_PLATED_HARNESS = armoredHarness("copper_plated_harness",ModArmorMaterials.COPPER.orElseThrow(), 5);
-    ArmoredHarnessItem IRON_PLATED_HARNESS = armoredHarness("iron_plated_harness", ArmorMaterials.IRON, 15);
-    ArmoredHarnessItem GOLD_PLATED_HARNESS = armoredHarness("gold_plated_harness", ArmorMaterials.GOLD, 7);
-    ArmoredHarnessItem DIAMOND_PLATED_HARNESS = armoredHarness("diamond_plated_harness", ArmorMaterials.DIAMOND, 33);
-    ArmoredHarnessItem NETHERITE_PLATED_HARNESS = armoredHarness("netherite_plated_harness", ArmorMaterials.NETHERITE, 37);
+    HarnessItem IRON_PLATED_HARNESS = armoredHarness("iron_plated_harness", ArmorMaterials.IRON);
+    HarnessItem GOLD_PLATED_HARNESS = armoredHarness("gold_plated_harness", ArmorMaterials.GOLD);
+    HarnessItem DIAMOND_PLATED_HARNESS = armoredHarness("diamond_plated_harness", ArmorMaterials.DIAMOND);
+    HarnessItem NETHERITE_PLATED_HARNESS = armoredHarness("netherite_plated_harness", ArmorMaterials.NETHERITE);
 
     static void generateEnchantments(BootstrapContext<Enchantment> context) {
         var items = context.lookup(Registries.ITEM);
@@ -60,9 +60,24 @@ public interface HappyAirshipsObjects {
         );
     }
 
-    static ArmoredHarnessItem armoredHarness(String name, Holder<ArmorMaterial> material, int durability) {
+    static HarnessItem armoredHarness(String name, Holder<ArmorMaterial> material) {
+        ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
+
         var type = ArmorItem.Type.CHESTPLATE;
-        return item(p -> new ArmoredHarnessItem(material, type, p), name, new Item.Properties().durability(type.getDurability(durability)));
+        var slot = EquipmentSlotGroup.bySlot(type.getSlot());
+        var resourceLocation = ResourceLocation.withDefaultNamespace("armor." + type.getName());
+
+        var defense = material.value().getDefense(type);
+        var toughness = material.value().toughness();
+
+        builder.add(Attributes.ARMOR, new AttributeModifier(resourceLocation, defense, AttributeModifier.Operation.ADD_VALUE), slot);
+        builder.add(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(resourceLocation, toughness, AttributeModifier.Operation.ADD_VALUE), slot);
+        float knockbackResistance = (material.value()).knockbackResistance();
+        if (knockbackResistance > 0.0F) {
+            builder.add(Attributes.KNOCKBACK_RESISTANCE, new AttributeModifier(resourceLocation, knockbackResistance, AttributeModifier.Operation.ADD_VALUE), slot);
+        }
+
+        return item(HarnessItem::new, name, new Item.Properties().attributes(builder.build()).stacksTo(1));
     }
 
     // Will be useful in later versions of mc
