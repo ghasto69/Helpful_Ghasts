@@ -3,6 +3,7 @@
   "package": "com.ghasto.happy_airships.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "EntityMixin",
     "HappyGhastMixin",
     "LivingEntityMixin"
   ],
@@ -14,6 +15,6 @@
   },
   "client": [
     "HappyGhastRendererMixin",
-    "SmithingScreenMixin"
+    "HappyGhastRenderStateMixin"
   ]
 }

@@ -28,7 +28,7 @@ public abstract class LivingEntityMixin extends Entity {
         if (!(this instanceof PropellerDataAccessor accessor)) return;
         if (accessor.getPropeller().isEmpty()) return;
 
-        spawnAtLocation(accessor.getPropeller());
+        spawnAtLocation(serverLevel, accessor.getPropeller());
         accessor.setPropeller(ItemStack.EMPTY);
     }
 }

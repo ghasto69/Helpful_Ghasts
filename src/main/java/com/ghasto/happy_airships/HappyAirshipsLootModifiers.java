@@ -71,15 +71,14 @@ public final class HappyAirshipsLootModifiers {
         int goldWeight = weights.gold();
         int diamondWeight = weights.diamond();
 
-        // Uncomment once copper harness is enabled.
-        // int copperWeight = ironWeight;
-        // if (copperWeight > 0) {
-        //     pool.add(
-        //             copperWeight == 1
-        //                     ? LootItem.lootTableItem(HappyAirshipsObjects.COPPER_PLATED_HARNESS)
-        //                     : LootItem.lootTableItem(HappyAirshipsObjects.COPPER_PLATED_HARNESS).setWeight(copperWeight)
-        //     );
-        // }
+        int copperWeight = ironWeight;
+        if (copperWeight > 0) {
+            pool.add(
+                    copperWeight == 1
+                            ? LootItem.lootTableItem(HappyAirshipsObjects.COPPER_PLATED_HARNESS)
+                            : LootItem.lootTableItem(HappyAirshipsObjects.COPPER_PLATED_HARNESS).setWeight(copperWeight)
+            );
+        }
 
         if (ironWeight > 0) {
             pool.add(

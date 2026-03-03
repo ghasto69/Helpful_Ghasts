@@ -1,16 +1,9 @@
 {
   "type": "minecraft:smithing_transform",
-  "addition": {
-    "item": "minecraft:netherite_ingot"
-  },
-  "base": {
-    "item": "happy_airships:diamond_plated_harness"
-  },
+  "addition": "minecraft:netherite_ingot",
+  "base": "happy_airships:diamond_plated_harness",
   "result": {
-    "count": 1,
     "id": "happy_airships:netherite_plated_harness"
   },
-  "template": {
-    "item": "minecraft:netherite_upgrade_smithing_template"
-  }
+  "template": "minecraft:netherite_upgrade_smithing_template"
 }

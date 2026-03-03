@@ -1,22 +1,24 @@
 package com.ghasto.happy_airships.mixin;
 
-import com.blackgear.vanillabackport.common.level.entities.happyghast.HappyGhast;
 import com.ghasto.happy_airships.HappyAirshipsObjects;
 import com.ghasto.happy_airships.propeller.PropellerDataAccessor;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.happyghast.HappyGhast;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -73,18 +75,18 @@ public abstract class HappyGhastMixin extends Animal implements PropellerDataAcc
             method = "addAdditionalSaveData",
             at = @At("TAIL")
     )
-    private void savePropellerData(CompoundTag compound, CallbackInfo ci) {
+    private void savePropellerData(ValueOutput tag, CallbackInfo ci) {
         if (getPropeller().isEmpty())
             return;
-        compound.put("propeller", getPropeller().save(registryAccess()));
+        tag.store("propeller", ItemStack.CODEC, getPropeller());
     }
 
     @Inject(
             method = "readAdditionalSaveData",
             at = @At("TAIL")
     )
-    private void readPropellerData(CompoundTag compound, CallbackInfo ci) {
-        var result = ItemStack.parse(registryAccess(), compound.get("propeller"));
+    private void readPropellerData(ValueInput tag, CallbackInfo ci) {
+        var result = tag.read("propeller", ItemStack.CODEC);
         result.ifPresent(this::setPropeller);
     }
 
@@ -99,8 +101,8 @@ public abstract class HappyGhastMixin extends Animal implements PropellerDataAcc
         var itemStack = player.getItemInHand(hand);
         if (!itemStack.is(Items.SHEARS)) return;
 
-        if(!level().isClientSide()) {
-            this.spawnAtLocation(getPropeller(), this.getBbHeight() + 0.5F);
+        if (!level().isClientSide()) {
+            this.spawnAtLocation((ServerLevel) level(), getPropeller(), this.getBbHeight() + 0.5F);
             setPropeller(ItemStack.EMPTY);
             itemStack.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
             playSound(SoundEvents.ARMOR_EQUIP_IRON.value());
