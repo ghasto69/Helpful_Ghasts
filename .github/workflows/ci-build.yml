@@ -63,6 +63,21 @@ jobs:
           ls -la build/libs || true
           exit $rc
 
+      - name: Inspect Fabric tag provider API
+        if: failure()
+        continue-on-error: true
+        run: |
+          set +e
+          for j in $(find ~/.gradle /home/runner/work -name '*.jar' 2>/dev/null | grep -i fabric | head -300); do
+            if unzip -l "$j" 2>/dev/null | grep -q 'datagen/v1/provider/FabricTagsProvider'; then
+              echo "===== $j"
+              javap -cp "$j" 'net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider' 2>&1 | head -30
+              javap -cp "$j" 'net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider$ItemTagsProvider' 2>&1 | head -30
+              javap -cp "$j" 'net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider$ValueLookupTagsProvider' 2>&1 | head -30
+              break
+            fi
+          done
+
       - uses: actions/upload-artifact@v4
         if: success()
         with:
