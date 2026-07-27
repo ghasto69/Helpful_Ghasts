@@ -49,6 +49,7 @@ jobs:
 
       - name: Build
         run: |
+          set +e
           timeout -s TERM 22m ./gradlew build --no-daemon > /tmp/b.log 2>&1
           rc=$?
           echo "===== COMPILE DIAGNOSTICS"
