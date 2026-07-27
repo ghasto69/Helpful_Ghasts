@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
           cache: gradle
 
       - name: Probe upstream versions
@@ -44,7 +44,8 @@ jobs:
             https://raw.githubusercontent.com/FabricMC/fabric-example-mod/HEAD/build.gradle \
             https://raw.githubusercontent.com/FabricMC/fabric-example-mod/HEAD/gradle.properties \
             https://raw.githubusercontent.com/FabricMC/fabric-example-mod/HEAD/settings.gradle \
-            https://raw.githubusercontent.com/FabricMC/fabric-example-mod/HEAD/gradle/wrapper/gradle-wrapper.properties ; do
+            https://raw.githubusercontent.com/FabricMC/fabric-example-mod/HEAD/src/main/resources/modid.mixins.json \
+            https://raw.githubusercontent.com/FabricMC/fabric-example-mod/HEAD/src/main/resources/fabric.mod.json ; do
             echo "===== $u"
             curl -sSL "$u" | head -120
           done
