@@ -34,6 +34,20 @@ jobs:
           ls -la build/libs || true
           exit $rc
 
+      - name: Inspect tag appender API
+        if: failure()
+        continue-on-error: true
+        run: |
+          set +e
+          for j in $(find ~/.gradle /home/runner/work -name '*.jar' 2>/dev/null | head -400); do
+            if unzip -l "$j" 2>/dev/null | grep -q 'net/minecraft/data/tags/TagAppender.class'; then
+              echo "===== $j"
+              javap -cp "$j" 'net.minecraft.data.tags.TagAppender' 2>&1 | head -25
+              javap -cp "$j" 'net.minecraft.data.tags.BlockItemTagAppender' 2>&1 | head -25
+              break
+            fi
+          done
+
       - uses: actions/upload-artifact@v4
         if: success()
         with:
