@@ -21,35 +21,6 @@ jobs:
           java-version: '25'
           cache: gradle
 
-      - name: Probe upstream versions
-        continue-on-error: true
-        run: |
-          echo "===== STABLE GAME VERSIONS ====="
-          curl -sS https://meta.fabricmc.net/v2/versions/game | jq -c '[.[] | select(.stable == true)][0:6]'
-          echo "===== LOADER ====="
-          curl -sS https://meta.fabricmc.net/v2/versions/loader | jq -c '[.[] | select(.stable == true)][0:3]'
-          echo "===== LOOM PLUGIN VERSIONS ====="
-          curl -sS https://maven.fabricmc.net/net/fabricmc/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml | tail -40
-          echo "===== LOOM REMAP PLUGIN VERSIONS ====="
-          curl -sS https://maven.fabricmc.net/net/fabricmc/fabric-loom-remap/fabric-loom-remap.gradle.plugin/maven-metadata.xml | tail -40
-          echo "===== FABRIC API FOR 26.2 ====="
-          curl -sS 'https://api.modrinth.com/v2/project/fabric-api/version?game_versions=%5B%2226.2%22%5D&loaders=%5B%22fabric%22%5D' | jq -c '[.[] | {version_number, game_versions}][0:5]'
-          echo "===== FABRIC API MAVEN ====="
-          curl -sS https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/maven-metadata.xml | tail -25
-
-      - name: Fetch reference template
-        continue-on-error: true
-        run: |
-          for u in \
-            https://raw.githubusercontent.com/FabricMC/fabric-example-mod/HEAD/build.gradle \
-            https://raw.githubusercontent.com/FabricMC/fabric-example-mod/HEAD/gradle.properties \
-            https://raw.githubusercontent.com/FabricMC/fabric-example-mod/HEAD/settings.gradle \
-            https://raw.githubusercontent.com/FabricMC/fabric-example-mod/HEAD/src/main/resources/modid.mixins.json \
-            https://raw.githubusercontent.com/FabricMC/fabric-example-mod/HEAD/src/main/resources/fabric.mod.json ; do
-            echo "===== $u"
-            curl -sSL "$u" | head -120
-          done
-
       - name: Build
         run: |
           set +e
@@ -63,21 +34,6 @@ jobs:
           ls -la build/libs || true
           exit $rc
 
-      - name: Inspect Fabric tag provider API
-        if: failure()
-        continue-on-error: true
-        run: |
-          set +e
-          for j in $(find ~/.gradle /home/runner/work -name '*.jar' 2>/dev/null | grep -i fabric | head -300); do
-            if unzip -l "$j" 2>/dev/null | grep -q 'datagen/v1/provider/FabricTagsProvider'; then
-              echo "===== $j"
-              javap -cp "$j" 'net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider' 2>&1 | head -30
-              javap -cp "$j" 'net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider$ItemTagsProvider' 2>&1 | head -30
-              javap -cp "$j" 'net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider$ValueLookupTagsProvider' 2>&1 | head -30
-              break
-            fi
-          done
-
       - uses: actions/upload-artifact@v4
         if: success()
         with:
@@ -86,8 +42,6 @@ jobs:
 
       - name: Publish jar to artifact branch
         if: success()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p /tmp/out
           cp build/libs/*.jar /tmp/out/
