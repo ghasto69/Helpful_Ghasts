@@ -1,0 +1,74 @@
+name: ci-build
+
+on:
+  push:
+    branches:
+      - 'claude/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Probe upstream versions
+        continue-on-error: true
+        run: |
+          echo "===== STABLE GAME VERSIONS ====="
+          curl -sS https://meta.fabricmc.net/v2/versions/game | jq -c '[.[] | select(.stable == true)][0:6]'
+          echo "===== LOADER ====="
+          curl -sS https://meta.fabricmc.net/v2/versions/loader | jq -c '[.[] | select(.stable == true)][0:3]'
+          echo "===== LOOM PLUGIN VERSIONS ====="
+          curl -sS https://maven.fabricmc.net/net/fabricmc/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml | tail -40
+          echo "===== LOOM REMAP PLUGIN VERSIONS ====="
+          curl -sS https://maven.fabricmc.net/net/fabricmc/fabric-loom-remap/fabric-loom-remap.gradle.plugin/maven-metadata.xml | tail -40
+          echo "===== FABRIC API FOR 26.2 ====="
+          curl -sS 'https://api.modrinth.com/v2/project/fabric-api/version?game_versions=%5B%2226.2%22%5D&loaders=%5B%22fabric%22%5D' | jq -c '[.[] | {version_number, game_versions}][0:5]'
+          echo "===== FABRIC API MAVEN ====="
+          curl -sS https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/maven-metadata.xml | tail -25
+
+      - name: Fetch porting notes
+        continue-on-error: true
+        run: |
+          for u in \
+            https://raw.githubusercontent.com/FabricMC/fabric-docs/main/develop/porting.md \
+            https://raw.githubusercontent.com/FabricMC/fabric-docs/main/versions/1.21.4/develop/porting.md ; do
+            echo "===== $u"
+            curl -sSL "$u" | head -400
+          done
+
+      - name: Build
+        run: ./gradlew build --stacktrace --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: jar
+          path: build/libs/*.jar
+
+      - name: Publish jar to artifact branch
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p /tmp/out
+          cp build/libs/*.jar /tmp/out/
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan claude-build-artifacts
+          git rm -rf --cached . >/dev/null
+          rm -rf src gradle .github build.gradle settings.gradle gradle.properties gradlew gradlew.bat README.md LICENSE .gitattributes .gitignore
+          mkdir -p dist
+          cp /tmp/out/*.jar dist/
+          git add -f dist
+          git commit -m "build output for $GITHUB_SHA"
+          git push -f origin claude-build-artifacts
