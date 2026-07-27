@@ -30,16 +30,23 @@ public interface HappyAirshipsObjects {
             DataComponentType.<EnchantmentValueEffect>builder().persistent(EnchantmentValueEffect.CODEC).build()
     );
 
-    PropellerItem PROPELLER = item(PropellerItem::new, "propeller", new Item.Properties().stacksTo(1));
+    ResourceKey<Item> PROPELLER_KEY = itemKey("propeller");
+    ResourceKey<Item> COPPER_PLATED_HARNESS_KEY = itemKey("copper_plated_harness");
+    ResourceKey<Item> IRON_PLATED_HARNESS_KEY = itemKey("iron_plated_harness");
+    ResourceKey<Item> GOLD_PLATED_HARNESS_KEY = itemKey("gold_plated_harness");
+    ResourceKey<Item> DIAMOND_PLATED_HARNESS_KEY = itemKey("diamond_plated_harness");
+    ResourceKey<Item> NETHERITE_PLATED_HARNESS_KEY = itemKey("netherite_plated_harness");
+
+    PropellerItem PROPELLER = item(PropellerItem::new, PROPELLER_KEY, new Item.Properties().stacksTo(1));
 
 
     //durability values from Items.java
 
-    Item COPPER_PLATED_HARNESS = armoredHarness("copper_plated_harness", ArmorMaterials.COPPER, HappyAirshipsClient.COPPER_PLATED_HARNESS);
-    Item IRON_PLATED_HARNESS = armoredHarness("iron_plated_harness", ArmorMaterials.IRON, HappyAirshipsClient.IRON_PLATED_HARNESS);
-    Item GOLD_PLATED_HARNESS = armoredHarness("gold_plated_harness", ArmorMaterials.GOLD, HappyAirshipsClient.GOLD_PLATED_HARNESS);
-    Item DIAMOND_PLATED_HARNESS = armoredHarness("diamond_plated_harness", ArmorMaterials.DIAMOND, HappyAirshipsClient.DIAMOND_PLATED_HARNESS);
-    Item NETHERITE_PLATED_HARNESS = armoredHarness("netherite_plated_harness", ArmorMaterials.NETHERITE, HappyAirshipsClient.NETHERITE_PLATED_HARNESS);
+    Item COPPER_PLATED_HARNESS = armoredHarness(COPPER_PLATED_HARNESS_KEY, ArmorMaterials.COPPER, HappyAirshipsClient.COPPER_PLATED_HARNESS);
+    Item IRON_PLATED_HARNESS = armoredHarness(IRON_PLATED_HARNESS_KEY, ArmorMaterials.IRON, HappyAirshipsClient.IRON_PLATED_HARNESS);
+    Item GOLD_PLATED_HARNESS = armoredHarness(GOLD_PLATED_HARNESS_KEY, ArmorMaterials.GOLD, HappyAirshipsClient.GOLD_PLATED_HARNESS);
+    Item DIAMOND_PLATED_HARNESS = armoredHarness(DIAMOND_PLATED_HARNESS_KEY, ArmorMaterials.DIAMOND, HappyAirshipsClient.DIAMOND_PLATED_HARNESS);
+    Item NETHERITE_PLATED_HARNESS = armoredHarness(NETHERITE_PLATED_HARNESS_KEY, ArmorMaterials.NETHERITE, HappyAirshipsClient.NETHERITE_PLATED_HARNESS);
 
     static void generateEnchantments(BootstrapContext<Enchantment> context) {
         var items = context.lookup(Registries.ITEM);
@@ -59,11 +66,11 @@ public interface HappyAirshipsObjects {
         );
     }
 
-    static Item armoredHarness(String name, ArmorMaterial material, ResourceKey<EquipmentAsset> equipmentAsset) {
+    static Item armoredHarness(ResourceKey<Item> key, ArmorMaterial material, ResourceKey<EquipmentAsset> equipmentAsset) {
         var type = ArmorType.CHESTPLATE;
         var entityGetter = BuiltInRegistries.acquireBootstrapRegistrationLookup(BuiltInRegistries.ENTITY_TYPE);
 
-        return item(Item::new, name, new Item.Properties()
+        return item(Item::new, key, new Item.Properties()
                 .durability(type.getDurability(material.durability()))
                 .component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.BODY)
                         .setEquipSound(SoundEvents.HARNESS_EQUIP)
@@ -79,10 +86,12 @@ public interface HappyAirshipsObjects {
         );
     }
 
-    // Will be useful in later versions of mc
-    static <T extends Item> T item(Function<Item.Properties, T> factory, String name, Item.Properties properties) {
-        var identifier = HappyAirships.resource(name);
-        return Registry.register(BuiltInRegistries.ITEM, identifier, factory.apply(properties.setId(ResourceKey.create(Registries.ITEM, identifier))));
+    static ResourceKey<Item> itemKey(String name) {
+        return ResourceKey.create(Registries.ITEM, HappyAirships.resource(name));
+    }
+
+    static <T extends Item> T item(Function<Item.Properties, T> factory, ResourceKey<Item> key, Item.Properties properties) {
+        return Registry.register(BuiltInRegistries.ITEM, key, factory.apply(properties.setId(key)));
     }
 
     static void init() {

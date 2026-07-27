@@ -22,13 +22,13 @@ public class HappyAirshipsItemTags extends FabricTagsProvider.ItemTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider wrapperLookup) {
         builder(GLIDE_ENCHANTABLE)
-                .add(HappyAirshipsObjects.PROPELLER);
+                .add(HappyAirshipsObjects.PROPELLER_KEY);
 
         builder(ItemTags.HARNESSES)
-                .add(HappyAirshipsObjects.COPPER_PLATED_HARNESS)
-                .add(HappyAirshipsObjects.IRON_PLATED_HARNESS)
-                .add(HappyAirshipsObjects.GOLD_PLATED_HARNESS)
-                .add(HappyAirshipsObjects.DIAMOND_PLATED_HARNESS)
-                .add(HappyAirshipsObjects.NETHERITE_PLATED_HARNESS);
+                .add(HappyAirshipsObjects.COPPER_PLATED_HARNESS_KEY)
+                .add(HappyAirshipsObjects.IRON_PLATED_HARNESS_KEY)
+                .add(HappyAirshipsObjects.GOLD_PLATED_HARNESS_KEY)
+                .add(HappyAirshipsObjects.DIAMOND_PLATED_HARNESS_KEY)
+                .add(HappyAirshipsObjects.NETHERITE_PLATED_HARNESS_KEY);
     }
 }
