@@ -37,14 +37,16 @@ jobs:
           echo "===== FABRIC API MAVEN ====="
           curl -sS https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/maven-metadata.xml | tail -25
 
-      - name: Fetch porting notes
+      - name: Fetch reference template
         continue-on-error: true
         run: |
           for u in \
-            https://raw.githubusercontent.com/FabricMC/fabric-docs/main/develop/porting.md \
-            https://raw.githubusercontent.com/FabricMC/fabric-docs/main/versions/1.21.4/develop/porting.md ; do
+            https://raw.githubusercontent.com/FabricMC/fabric-example-mod/HEAD/build.gradle \
+            https://raw.githubusercontent.com/FabricMC/fabric-example-mod/HEAD/gradle.properties \
+            https://raw.githubusercontent.com/FabricMC/fabric-example-mod/HEAD/settings.gradle \
+            https://raw.githubusercontent.com/FabricMC/fabric-example-mod/HEAD/gradle/wrapper/gradle-wrapper.properties ; do
             echo "===== $u"
-            curl -sSL "$u" | head -400
+            curl -sSL "$u" | head -120
           done
 
       - name: Build
@@ -52,10 +54,10 @@ jobs:
           set +e
           timeout -s TERM 22m ./gradlew build --no-daemon > /tmp/b.log 2>&1
           rc=$?
-          echo "===== COMPILE DIAGNOSTICS"
-          grep -nE "\.java:[0-9]+: (error|warning)|^\s+symbol:|^\s+location:|error: |Execution failed|What went wrong|^\* Try|Caused by:" /tmp/b.log | head -300
-          echo "===== TAIL"
-          tail -60 /tmp/b.log
+          echo "===== FIRST ERRORS"
+          grep -E "error:|symbol:|location:|does not exist|Execution failed|What went wrong" /tmp/b.log | head -40
+          echo "===== SUMMARY"
+          grep -E "^[0-9]+ errors|^BUILD|Could not resolve|Could not find" /tmp/b.log | head -20
           echo "gradle exit: $rc"
           ls -la build/libs || true
           exit $rc
