@@ -21,10 +21,10 @@ public class HappyAirshipsItemTags extends FabricTagsProvider.ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider wrapperLookup) {
-        valueLookupBuilder(GLIDE_ENCHANTABLE)
+        builder(GLIDE_ENCHANTABLE)
                 .add(HappyAirshipsObjects.PROPELLER);
 
-        valueLookupBuilder(ItemTags.HARNESSES)
+        builder(ItemTags.HARNESSES)
                 .add(HappyAirshipsObjects.COPPER_PLATED_HARNESS)
                 .add(HappyAirshipsObjects.IRON_PLATED_HARNESS)
                 .add(HappyAirshipsObjects.GOLD_PLATED_HARNESS)
