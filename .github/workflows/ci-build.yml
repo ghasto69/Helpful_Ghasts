@@ -19,6 +19,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
+          cache: gradle
 
       - name: Probe upstream versions
         continue-on-error: true
@@ -47,7 +48,13 @@ jobs:
           done
 
       - name: Build
-        run: ./gradlew build --stacktrace --no-daemon
+        run: |
+          set -o pipefail
+          timeout -s TERM 22m ./gradlew build --stacktrace --no-daemon --info 2>&1 | tail -c 400000
+          rc=$?
+          echo "gradle exit: $rc"
+          ls -la build/libs || true
+          exit $rc
 
       - uses: actions/upload-artifact@v4
         if: success()
