@@ -4,13 +4,16 @@ import com.ghasto.happy_airships.HappyAirships;
 import com.ghasto.happy_airships.HappyAirshipsObjects;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.*;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -20,8 +23,8 @@ public class HappyAirshipsRecipeProvider extends FabricRecipeProvider {
     }
 
     @Override
-    protected RecipeProvider createRecipeProvider(HolderLookup.Provider provider, RecipeOutput recipeOutput) {
-        return new RecipeProvider(provider, recipeOutput) {
+    protected RecipeProvider createRecipeProvider(HolderLookup.Provider provider, BootstrapContext<Recipe<?>> recipeContext, BootstrapContext<Advancement> advancementContext) {
+        return new RecipeProvider(recipeContext, advancementContext) {
             @Override
             public void buildRecipes() {
                 ShapedRecipeBuilder.shaped(provider.lookupOrThrow(Registries.ITEM), RecipeCategory.TOOLS, HappyAirshipsObjects.PROPELLER)
@@ -31,7 +34,7 @@ public class HappyAirshipsRecipeProvider extends FabricRecipeProvider {
                         .define('L', ItemTags.LOGS)
                         .define('I', Items.IRON_INGOT)
                         .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
-                        .save(recipeOutput);
+                        .save(output);
 
                 SmithingTransformRecipeBuilder.smithing(
                         Ingredient.of(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE),
@@ -39,7 +42,7 @@ public class HappyAirshipsRecipeProvider extends FabricRecipeProvider {
                         Ingredient.of(Items.NETHERITE_INGOT),
                         RecipeCategory.TOOLS,
                         HappyAirshipsObjects.NETHERITE_PLATED_HARNESS
-                ).unlocks("has_netherite_ingot", has(Items.NETHERITE_INGOT)).save(recipeOutput, ResourceKey.create(Registries.RECIPE, HappyAirships.resource("netherite_plated_harness")));
+                ).unlocks("has_netherite_ingot", has(Items.NETHERITE_INGOT)).save(output, ResourceKey.create(Registries.RECIPE, HappyAirships.resource("netherite_plated_harness")));
             }
         };
     }

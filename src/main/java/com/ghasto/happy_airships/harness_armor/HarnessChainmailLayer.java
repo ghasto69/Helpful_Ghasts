@@ -46,11 +46,11 @@ public class HarnessChainmailLayer extends RenderLayer<HappyGhastRenderState, Ha
 
         poseStack.scale(2f, 2f, 2f);
 
-        poseStack.mulPose(Axis.YP.rotationDegrees(180));
+        poseStack.rotateDegrees(Axis.YP, 180);
 
         poseStack.translate(0, -12 / 16f, 0);
 
-        submitNodeCollector.submitModel(model, state, poseStack, renderType, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
+        submitNodeCollector.submitModel(model, state, poseStack, renderType, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
 
         poseStack.popPose();
     }

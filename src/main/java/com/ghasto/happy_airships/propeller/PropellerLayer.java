@@ -40,12 +40,12 @@ public class PropellerLayer extends RenderLayer<HappyGhastRenderState, HappyGhas
                 (state.isRidden ? 1f : 0.1f) *
                 20f % 360f;
 
-        poseStack.mulPose(Axis.ZP.rotationDegrees(rotation));
+        poseStack.rotateDegrees(Axis.ZP, rotation);
         poseStack.translate(0, -0.5f, 0);
 
-        submitNodeCollector.submitModel(model, state, poseStack, renderType, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
+        submitNodeCollector.submitModel(model, state, poseStack, renderType, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
         if (accessor.getPropeller().hasFoil()) {
-            submitNodeCollector.submitModel(model, state, poseStack, RenderTypes.entityGlint(), lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
+            submitNodeCollector.submitModel(model, state, poseStack, RenderTypes.entitySolidGlint(HappyAirships.resource("textures/entity/happy_ghast/propeller.png")), lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
         }
 
         poseStack.popPose();

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "happy_airships:netherite_plated_harness"
+        "recipes": "happy_airships:netherite_plated_harness"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
