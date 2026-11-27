@@ -17,5 +17,8 @@ public class HappyAirshipsEnchantmentTags extends EnchantmentTagsProvider {
     protected void addTags(HolderLookup.Provider provider) {
         tag(EnchantmentTags.TRADEABLE)
                 .add(HappyAirshipsObjects.GLIDE);
+
+        tag(EnchantmentTags.IN_ENCHANTING_TABLE)
+                .add(HappyAirshipsObjects.GLIDE);
     }
 }

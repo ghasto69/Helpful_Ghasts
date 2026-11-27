@@ -30,7 +30,7 @@ public interface HappyAirshipsObjects {
             DataComponentType.<EnchantmentValueEffect>builder().persistent(EnchantmentValueEffect.CODEC).build()
     );
 
-    PropellerItem PROPELLER = item(PropellerItem::new, "propeller", new Item.Properties().stacksTo(1));
+    PropellerItem PROPELLER = item(PropellerItem::new, "propeller", new Item.Properties().stacksTo(1).enchantable(14));
 
 
     //durability values from Items.java
