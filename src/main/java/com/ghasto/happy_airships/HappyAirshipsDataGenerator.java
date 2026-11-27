@@ -1,6 +1,7 @@
 package com.ghasto.happy_airships;
 
 import com.ghasto.happy_airships.datagen.HappyAirshipsDynamicRegistryProvider;
+import com.ghasto.happy_airships.datagen.HappyAirshipsEnchantmentTags;
 import com.ghasto.happy_airships.datagen.HappyAirshipsItemTags;
 import com.ghasto.happy_airships.datagen.HappyAirshipsModelProvider;
 import com.ghasto.happy_airships.datagen.HappyAirshipsRecipeProvider;
@@ -16,6 +17,7 @@ public class HappyAirshipsDataGenerator implements DataGeneratorEntrypoint {
         pack.addProvider(HappyAirshipsModelProvider::new);
         pack.addProvider(HappyAirshipsDynamicRegistryProvider::new);
         pack.addProvider(HappyAirshipsItemTags::new);
+        pack.addProvider(HappyAirshipsEnchantmentTags::new);
         pack.addProvider(HappyAirshipsRecipeProvider::new);
     }
 
